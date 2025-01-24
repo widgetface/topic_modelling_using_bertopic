@@ -1,4 +1,4 @@
-# Example shoing the use of zeroshot_topic_list in Bertopic
+# Example demonstrating the use of zeroshot_topic_list in Bertopic
 import logging
 import warnings
 import pandas as pd
