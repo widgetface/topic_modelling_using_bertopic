@@ -28,6 +28,7 @@ REQUIRED_COLUMNS = ["Review"]
 path = "./data/hotel_reviews.csv"
 dataset_subset = "all"
 ds_path = f"./data/dataset_trip_advisor_{dataset_subset}"
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 ds = loading_utils.load_local_file(path=path, type="csv")
 df = pd.DataFrame(data=ds)
@@ -41,7 +42,8 @@ df = (
 
 data = df["Review"].tolist()
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+model_kwargs = {"device": device}
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2", model_kwargs=model_kwargs)
 
 # Do embeddings in batches
 import numpy as np
