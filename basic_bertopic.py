@@ -1,4 +1,4 @@
-# Basic Bertopic using trip_advisor revies of hotels
+# Basic Bertopic using trip_advisor reviews of hotels
 
 import os
 import torch
