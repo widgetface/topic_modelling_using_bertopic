@@ -32,8 +32,7 @@ logging.getLogger("BERTopic").disabled = True
 
 REQUIRED_COLUMNS = ["Review"]
 path = "./data/hotel_reviews.csv"
-dataset_subset = "all"
-ds_path = f"./data/dataset_trip_advisor_{dataset_subset}"
+
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 ds = loading_utils.load_local_file(path=path, type="csv")
@@ -48,22 +47,28 @@ df = (
 
 data = df["Review"].tolist()
 
-model_kwargs = {"device": device}
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2", model_kwargs=model_kwargs)
+# model_kwargs = {"device": device}
+# test_data = data[:500]
+# embed_data = data[500:]
+# embedding_model = SentenceTransformer("jxm/cde-small-v2", trust_remote_code=True)
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device=device)
 
 # Do embeddings in batches
 import numpy as np
 from tqdm.auto import tqdm
 
-batch_size = 16
-n = len(data)
-embeds = np.zeros((n, embedding_model.get_sentence_embedding_dimension()))
+# batch_size = 16
+# n = len(data)
+# embeds = np.zeros((n, embedding_model.get_sentence_embedding_dimension()))
 
-for i in tqdm(range(0, n, batch_size)):
-    i_end = min(i + batch_size, n)
-    batch = data[i:i_end]
-    batch_embed = embedding_model.encode(batch)
-    embeds[i:i_end, :] = batch_embed
+# for i in tqdm(range(0, n, batch_size)):
+#     i_end = min(i + batch_size, n)
+#     batch = data[i:i_end]
+#     batch_embed = embedding_model.encode(batch)
+#     embeds[i:i_end, :] = batch_embed
+
+
+embeds = embedding_model.encode(data, batch_size=32, show_progress_bar=True)
 
 umap_model = UMAP(n_neighbors=3, n_components=3, min_dist=0.05)
 hdbscan_model = HDBSCAN(
