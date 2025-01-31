@@ -1,5 +1,4 @@
 # Basic Bertopic using trip_advisor reviews of hotels
-
 import os
 import torch
 import logging
@@ -47,26 +46,11 @@ df = (
 
 data = df["Review"].tolist()
 
-# model_kwargs = {"device": device}
-# test_data = data[:500]
-# embed_data = data[500:]
-# embedding_model = SentenceTransformer("jxm/cde-small-v2", trust_remote_code=True)
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device=device)
 
 # Do embeddings in batches
 import numpy as np
 from tqdm.auto import tqdm
-
-# batch_size = 16
-# n = len(data)
-# embeds = np.zeros((n, embedding_model.get_sentence_embedding_dimension()))
-
-# for i in tqdm(range(0, n, batch_size)):
-#     i_end = min(i + batch_size, n)
-#     batch = data[i:i_end]
-#     batch_embed = embedding_model.encode(batch)
-#     embeds[i:i_end, :] = batch_embed
-
 
 embeds = embedding_model.encode(data, batch_size=32, show_progress_bar=True)
 
@@ -104,9 +88,6 @@ topic_model = BERTopic(
     ctfidf_model=ctfidf_model,
     verbose=True,
 ).fit(data, embeds)
-
-print("Original topics modelling results:")
-print(topic_model.get_topic_info().head(10))
 
 model = T5ForConditionalGeneration.from_pretrained("t5-small")
 tokenizer = T5Tokenizer.from_pretrained("t5-small")
